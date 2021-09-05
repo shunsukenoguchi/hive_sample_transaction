@@ -19,6 +19,9 @@ class _TransactionPageState extends State<TransactionPage> {
     super.dispose();
   }
 
+  final formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final ageController = TextEditingController();
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -38,23 +41,39 @@ class _TransactionPageState extends State<TransactionPage> {
         //   onPressed: () => showDialog(
         //     context: context,
         //     builder: (context) => TransactionDialog(
-        //       onClickedDone: addTransaction,
-        //     ),
+        //
         //   ),
         // ),
       );
 
   Widget buildContent(List<Transaction> transactions) {
-    if (transactions.isEmpty) {
-      return Center(
-        child: Text(
-          'No expenses yet!',
-          style: TextStyle(fontSize: 24),
-        ),
-      );
-    }
+    // if (transactions.isEmpty) {
+    //   return Center(
+    //     child: Text(
+    //       'No expenses yet!',
+    //       style: TextStyle(fontSize: 24),
+    //     ),
+    //   );
+    // }
     return Column(
       children: [
+        SizedBox(height: 24),
+        Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: 8),
+                buildName(),
+                SizedBox(height: 8),
+                buildAge(),
+                SizedBox(height: 8),
+                buildAddButton(context),
+              ],
+            ),
+          ),
+        ),
         SizedBox(height: 24),
         Expanded(
           child: ListView.builder(
@@ -68,6 +87,45 @@ class _TransactionPageState extends State<TransactionPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildName() => TextFormField(
+        controller: nameController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: 'Enter Name',
+        ),
+        validator: (name) =>
+            name != null && name.isEmpty ? 'Enter a name' : null,
+      );
+
+  Widget buildAge() => TextFormField(
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: 'Enter Amount',
+        ),
+        keyboardType: TextInputType.number,
+        validator: (amount) => amount != null && double.tryParse(amount) == null
+            ? 'Enter a valid number'
+            : null,
+        controller: ageController,
+      );
+  Widget buildAddButton(BuildContext context) {
+    return TextButton(
+      child: Text('add'),
+      onPressed: () async {
+        final isValid = formKey.currentState!.validate();
+
+        if (isValid) {
+          final name = nameController.text;
+          final age = int.tryParse(ageController.text) ?? 0;
+
+          addTransaction(name, age);
+
+          // Navigator.of(context).pop();
+        }
+      },
     );
   }
 }
