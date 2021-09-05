@@ -14,6 +14,7 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   @override
+  //最後の方に実行するやつ（hiveはクローズしなくてもいいらしいから、やらなくてもいいかも）
   void dispose() {
     Hive.close();
 
@@ -93,35 +94,35 @@ Widget buildTransaction(
       ),
       subtitle: Text(age),
       children: [
-        // buildButtons(context, transaction),
+        buildButtons(context, transaction),
       ],
     ),
   );
 }
 
-// Widget buildButtons(BuildContext context, Transaction transaction) => Row(
-//   children: [
-//     Expanded(
-//       child: TextButton.icon(
-//         label: Text('Edit'),
-//         icon: Icon(Icons.edit),
-//         onPressed: () => Navigator.of(context).push(
-//           MaterialPageRoute(
-//             builder: (context) => TransactionDialog(
-//               transaction: transaction,
-//               onClickedDone: (name, amount, isExpense) =>
-//                   editTransaction(transaction, name, amount, isExpense),
-//             ),
-//           ),
-//         ),
-//       ),
-//     ),
-//     Expanded(
-//       child: TextButton.icon(
-//         label: Text('Delete'),
-//         icon: Icon(Icons.delete),
-//         onPressed: () => deleteTransaction(transaction),
-//       ),
-//     )
-//   ],
-// );
+Widget buildButtons(BuildContext context, Transaction transaction) => Row(
+      children: [
+        Expanded(
+          child: TextButton.icon(
+            label: Text('Edit'),
+            icon: Icon(Icons.edit),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => Register(
+                  transaction: transaction,
+                  onClickedDone: (name, age) =>
+                      editTransaction(transaction, name, age),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: TextButton.icon(
+            label: Text('Delete'),
+            icon: Icon(Icons.delete),
+            onPressed: () => deleteTransaction(transaction),
+          ),
+        )
+      ],
+    );

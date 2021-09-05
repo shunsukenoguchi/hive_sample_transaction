@@ -23,6 +23,8 @@ class _RegisterState extends State<Register> {
   final ageController = TextEditingController();
 
   @override
+  //クラスのコンストラクターが呼び出されたあと、すぐにこのinitStateが呼ばれます。
+  // 最初に一度だけ実行されます。
   void initState() {
     super.initState();
 
@@ -35,6 +37,7 @@ class _RegisterState extends State<Register> {
   }
 
   @override
+  //最後の方に実行するやつ　（やる意味があるかは分からない、メモリを取らないようにするためとかかな？）
   void dispose() {
     nameController.dispose();
     ageController.dispose();
