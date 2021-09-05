@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_sample_transaction/boxes.dart';
 import 'package:hive_sample_transaction/model/transaction.dart';
+import 'package:hive_sample_transaction/page/register_page.dart';
 // import 'package:hive_database_example/widget/transaction_dialog.dart';
 // import 'package:intl/intl.dart';
 
@@ -19,9 +20,6 @@ class _TransactionPageState extends State<TransactionPage> {
     super.dispose();
   }
 
-  final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final ageController = TextEditingController();
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -36,44 +34,31 @@ class _TransactionPageState extends State<TransactionPage> {
             return buildContent(transactions);
           },
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   child: Icon(Icons.add),
-        //   onPressed: () => showDialog(
-        //     context: context,
-        //     builder: (context) => TransactionDialog(
-        //
-        //   ),
-        // ),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Register(
+                    onClickedDone: addTransaction,
+                  ),
+                ),
+              );
+            }),
       );
 
   Widget buildContent(List<Transaction> transactions) {
-    // if (transactions.isEmpty) {
-    //   return Center(
-    //     child: Text(
-    //       'No expenses yet!',
-    //       style: TextStyle(fontSize: 24),
-    //     ),
-    //   );
-    // }
+    if (transactions.isEmpty) {
+      return Center(
+        child: Text(
+          'No expenses yet!',
+          style: TextStyle(fontSize: 24),
+        ),
+      );
+    }
     return Column(
       children: [
-        SizedBox(height: 24),
-        Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(height: 8),
-                buildName(),
-                SizedBox(height: 8),
-                buildAge(),
-                SizedBox(height: 8),
-                buildAddButton(context),
-              ],
-            ),
-          ),
-        ),
         SizedBox(height: 24),
         Expanded(
           child: ListView.builder(
@@ -87,45 +72,6 @@ class _TransactionPageState extends State<TransactionPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildName() => TextFormField(
-        controller: nameController,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Enter Name',
-        ),
-        validator: (name) =>
-            name != null && name.isEmpty ? 'Enter a name' : null,
-      );
-
-  Widget buildAge() => TextFormField(
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Enter Amount',
-        ),
-        keyboardType: TextInputType.number,
-        validator: (amount) => amount != null && double.tryParse(amount) == null
-            ? 'Enter a valid number'
-            : null,
-        controller: ageController,
-      );
-  Widget buildAddButton(BuildContext context) {
-    return TextButton(
-      child: Text('add'),
-      onPressed: () async {
-        final isValid = formKey.currentState!.validate();
-
-        if (isValid) {
-          final name = nameController.text;
-          final age = int.tryParse(ageController.text) ?? 0;
-
-          addTransaction(name, age);
-
-          // Navigator.of(context).pop();
-        }
-      },
     );
   }
 }
@@ -146,9 +92,9 @@ Widget buildTransaction(
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       subtitle: Text(age),
-      // children: [
-      //   buildButtons(context, transaction),
-      // ],
+      children: [
+        // buildButtons(context, transaction),
+      ],
     ),
   );
 }
@@ -179,40 +125,3 @@ Widget buildTransaction(
 //     )
 //   ],
 // );
-
-Future addTransaction(String name, int age) async {
-  final transaction = Transaction()
-    ..name = name
-    ..age = age;
-
-  final box = Boxes.getTransactions();
-  box.add(transaction);
-  //box.put('mykey', transaction);
-
-  // final mybox = Boxes.getTransactions();
-  // final myTransaction = mybox.get('key');
-  // mybox.values;
-  // mybox.keys;
-}
-
-void editTransaction(
-  Transaction transaction,
-  String name,
-  int age,
-) {
-  transaction.name = name;
-  transaction.age = age;
-
-  // final box = Boxes.getTransactions();
-  // box.put(transaction.key, transaction);
-
-  transaction.save();
-}
-
-void deleteTransaction(Transaction transaction) {
-  // final box = Boxes.getTransactions();
-  // box.delete(transaction.key);
-
-  transaction.delete();
-  //setState(() => transactions.remove(transaction));
-}
